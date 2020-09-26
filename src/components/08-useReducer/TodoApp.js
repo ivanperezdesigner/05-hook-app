@@ -1,23 +1,43 @@
-import React, { useReducer } from 'react'
+import React, { useEffect, useReducer } from 'react'
+import { useForm } from '../../hooks/useForm'
 import './styles.css'
 import { todoReducer } from './todoReducer'
 
-const initialState = [{
-    id: new Date().getTime(),
-    desc: 'Learn React',
-    done: false
-}]
+const init = () => {
+    return JSON.parse(localStorage.getItem('todos')) || []
+}
 
 export const TodoApp = () => {
-    const [ todos, dispatch ] = useReducer(todoReducer, initialState)
-    console.log(todos)
+    const [ todos, dispatch ] = useReducer(todoReducer, [], init)
+    const [{ description }, handleInputChange, reset] = useForm({
+        description: ''
+    })
+
+    useEffect(() => {
+        localStorage.setItem('todos', JSON.stringify(todos))
+    }, [todos])
+
+    const handleDelete = ( todoId ) => {
+        // Crear la action
+        const action = {
+            type: 'delete',
+            payload: todoId
+        }
+        // Crear el dispatch
+        dispatch (action)
+
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
+
+        if (description.trim().length <= 1){
+            return
+        }
         
         const newTodo = {
             id: new Date().getTime(),
-            desc: 'New task',
+            desc: description,
             done: false
         }
 
@@ -27,6 +47,7 @@ export const TodoApp = () => {
         }
 
         dispatch (action)
+        reset()
     }
 
     return (
@@ -43,7 +64,10 @@ export const TodoApp = () => {
                                 key={todo.id}
                             >
                                 <p className='text-center'>{i + 1}. {todo.desc}</p>
-                                <button className='btn btn-outline-danger'>
+                                <button 
+                                    className='btn btn-outline-danger'
+                                    onClick={ () => handleDelete( todo.id ) }
+                                >
                                     Delete
                                 </button>
                             </li>
@@ -61,6 +85,8 @@ export const TodoApp = () => {
                             autoComplete='off'
                             name='description'
                             className='form-control'
+                            value={ description }
+                            onChange={ handleInputChange }
                         />
                         <button
                             type='submit'
