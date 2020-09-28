@@ -28,6 +28,13 @@ export const TodoApp = () => {
 
     }
 
+    const handleToggle = (todoId) => {
+        dispatch({
+            type: 'toggle',
+            payload: todoId
+        })
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
 
@@ -63,7 +70,11 @@ export const TodoApp = () => {
                                 className='list-group-item'
                                 key={todo.id}
                             >
-                                <p className='text-center'>{i + 1}. {todo.desc}</p>
+                                <p 
+                                    className={`${ todo.done && 'completed'}`}
+                                    onClick={() => handleToggle(todo.id)}
+                                >
+                                {i + 1}. {todo.desc}</p>
                                 <button 
                                     className='btn btn-outline-danger'
                                     onClick={ () => handleDelete( todo.id ) }
