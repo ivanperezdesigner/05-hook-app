@@ -28,6 +28,13 @@ export const useFetch = ( url ) => {
                     console.log('el componente no se montó')
                 }
             })
+            .catch(() =>{
+                setState({
+                    data: null,
+                    loading: false,
+                    error: 'No se pudo cargar la info'
+                })
+            })
     }, [url])
 
     return state
